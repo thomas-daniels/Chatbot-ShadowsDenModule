@@ -118,11 +118,8 @@ def command_viewspells(cmd, bot, args, msg, event):
         user_id = int(args[0])
     except ValueError:
         return "Invalid arguments."
-    try:
-        spells = Data.spell_manager.view_spells(user_id)
-        return spells
-    except:
-        return "An error occurred."
+    spells = Data.spell_manager.view_spells(user_id)
+    return spells
 
 
 def command_latestword(cmd, bot, args, msg, event):
