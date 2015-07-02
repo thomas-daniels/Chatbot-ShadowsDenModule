@@ -111,7 +111,7 @@ def command_time(cmd, bot, args, msg, event):
         return "Command does not have enough arguments."
 
 
-def command_viewspells(self, args, msg, event):
+def command_viewspells(cmd, bot, args, msg, event):
     if len(args) < 1:
         return "Not enough arguments."
     try:
@@ -119,7 +119,7 @@ def command_viewspells(self, args, msg, event):
     except ValueError:
         return "Invalid arguments."
     try:
-        spells = self.spell_manager.view_spells(user_id)
+        spells = Data.spell_manager.view_spells(user_id)
         return spells
     except:
         return "An error occurred."
