@@ -375,17 +375,17 @@ def on_event(event, client, bot):
     message = event.message
     h = HTMLParser()
     content = h.unescape(message.content_source)
+    content = re.sub(r"([:;][-']?[)/(DPdpoO\[\]\\|])", "", content)  # strip smilies
+    content = re.sub(r"\[(.+?)\]\(.+?\)", r"\1", content)
+    content = re.sub(r"\(.+?\)", "", content)
+    content = re.sub(r"\s+", " ", content)
+    content = content.strip()
     if not re.compile("^:\d+ [a-zA-Z0-9-]+$").search(content):
         return
     if event.user.id == bot.client.get_me().id:
         Data.current_word_to_reply_to = content.split(" ")[1]
         Data.latest_word_id = message.id
         return
-    content = re.sub(r"([:;][-']?[)/(DPdpoO\[\]\\|])", "", content)  # strip smilies
-    content = re.sub(r"\[(.+?)\]\(.+?\)", r"\1", content)
-    content = re.sub(r"\(.+?\)", "", content)
-    content = re.sub(r"\s+", " ", content)
-    content = content.strip()
     parts = content.split(" ")
     c = parts[1]
     Data.latest_word_id = message.id
