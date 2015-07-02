@@ -1,3 +1,5 @@
 config.txt
 linkedWords.txt
 linkExplanations.txt
+SecretSpells.py
+*.pyc
