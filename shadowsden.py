@@ -381,7 +381,7 @@ def on_event(event, client, bot):
         bot.current_word_to_reply_to = content.split(" ")[1]
         bot.latest_word_id = message.id
         return
-    if not re.compile(":\d+ [a-zA-Z0-9-]+").search(content):
+    if not re.compile("^:\d+ [a-zA-Z0-9-]+$").search(content):
         return
     content = re.sub(r"([:;][-']?[)/(DPdpoO\[\]\\|])", "", content)  # strip smilies
     content = re.sub(r"\[(.+?)\]\(.+?\)", r"\1", content)
