@@ -369,8 +369,7 @@ def on_bot_load(bot):
 
 
 def on_event(event, client, bot):
-    if not isinstance(event, MessagePosted) or not bot.enabled\
-            or event.user.id in bot.banned:
+    if not isinstance(event, MessagePosted) or not bot.enabled:
         return
     message = event.message
     h = HTMLParser()
