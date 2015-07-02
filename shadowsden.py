@@ -364,6 +364,7 @@ def on_bot_load(bot):
     if os.path.isfile("linkedWords.txt"):
         with open("linkedWords.txt", "r") as f:
             Data.links = pickle.load(f)
+    Data.spell_manager.c = bot.client
     thread.start_new_thread(scheduled_empty_queue, (bot,))
 
 
