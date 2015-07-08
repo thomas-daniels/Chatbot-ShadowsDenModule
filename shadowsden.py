@@ -99,9 +99,7 @@ def command_time(cmd, bot, args, msg, event):
                 return "Waiting time cannot be greater than 10 minutes (= 600 seconds)."
             if new_time > -1:
                 Data.waiting_time = new_time
-                f = open("config.txt", "w")
-                f.write(str(Data.waiting_time))
-                f.close()
+                SaveIO.save([Data.waiting_time], save_subdir, "waitingtime")
                 return "Waiting time set to %s %s." % (args[0], ("seconds" if new_time != 1 else "second"))
             else:
                 return "Given argument has to be a positive integer."
