@@ -1,15 +1,14 @@
-import pickle
 import re
 from ChatExchange.chatexchange.messages import Message
 from ChatExchange.chatexchange.events import MessagePosted
 from SpellManager import SpellManager
-import os
 import time
 import random
 from GetAssociatedWord import get_associated_word
 import thread
 from Module import Command
 from HTMLParser import HTMLParser
+import SaveIO
 
 
 class Data:
@@ -168,8 +167,7 @@ def command_link(cmd, bot, args, msg, event):
     if links_contain((args[0].replace("_", " "), args[1].replace("_", " "))):
         return "Link is already added."
     Data.links.append((args[0].replace("_", " "), args[1].replace("_", " ")))
-    with open("linkedWords.txt", "w") as f:
-        pickle.dump(Data.links, f)
+    SaveIO.save(Data.links, save_subdir, "linkedWords")
     return "Link added."
 
 
@@ -192,8 +190,7 @@ def removelinkexplanation(link):
             ret = True
     for r in to_remove:
         Data.link_explanations.remove(r)
-    with open("linkExplanations.txt", "w") as f:
-        pickle.dump(Data.link_explanations, f)
+    SaveIO.save(Data.link_explanations, save_subdir, "linkExplanations")
     return ret
 
 
@@ -208,8 +205,7 @@ def command_addlinkexplanation(cmd, bot, args, msg, event):
     if re.compile(r"[^a-zA-Z0-9_%*/:.#()\[\]?&=-]").search(args[2]):
         return "Sorry, your explanation can only contain the chars `a-zA-Z_*%/:.#()[]-`."
     Data.link_explanations.append(((w1, w2), args[2]))
-    with open("linkExplanations.txt", "w") as f:
-        pickle.dump(Data.link_explanations, f)
+    SaveIO.save(Data.link_explanations, save_subdir, "linkExplanations")
     return "Explanation added."
 
 
@@ -315,8 +311,7 @@ def remove_link(item0, item1):
         lowercase_link = (link[0].lower(), link[1].lower())
         if item0.lower() in lowercase_link and item1.lower() in lowercase_link:
             Data.links.pop(i)
-            with open("linkedWords.txt", "w") as f:
-                pickle.dump(Data.links, f)
+            SaveIO.save(Data.links, save_subdir, "linkedWords")
             return "Link removed."
     return "No link found."
 
@@ -353,17 +348,13 @@ def command_emptyqueue(self, args, msg, event):
 
 
 def on_bot_load(bot):
-    if os.path.isfile("config.txt"):  # config.txt is for values that can change at runtime, Config.py is for static data
-        f = open("config.txt", "r")
-        Data.waiting_time = int(f.read())
-        f.close()
+    waiting_time = SaveIO.load(save_subdir, "waitingtime")
+    if len(waiting_time) == 0:
+        waiting_time = 20
     else:
-        f = open("config.txt", "w")
-        f.write("20")
-        f.close()
-    if os.path.isfile("linkedWords.txt"):
-        with open("linkedWords.txt", "r") as f:
-            Data.links = pickle.load(f)
+        waiting_time = waiting_time[0]
+    Data.waiting_time = waiting_time
+    Data.links = SaveIO.load(save_subdir, "linkedWords")
     Data.spell_manager.c = bot.client
     thread.start_new_thread(scheduled_empty_queue, (bot,))
 
@@ -412,3 +403,5 @@ commands = [
     Command('emptyqueue', command_award, "", False, True),
     Command('removespell', command_removespell, "", False, True)
 ]
+module_name = "shadowsden"
+save_subdir = "shadowsden"

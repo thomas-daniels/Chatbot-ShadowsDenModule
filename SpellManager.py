@@ -1,6 +1,6 @@
-import pickle
 import os.path
 from SecretSpells import SecretSpells
+import SaveIO
 
 
 class SpellManager:
@@ -45,12 +45,10 @@ class SpellManager:
                 self.earnedSpells[user_id].remove(spell)
 
     def save(self):
-        with open("earnedSpells.txt", "w") as f:
-            pickle.dump(self.earnedSpells, f)
+        SaveIO.save(self.earnedSpells, "shadowsden", "earnedSpells")
 
     def load(self):
-        with open("earnedSpells.txt", "r") as f:
-            self.earnedSpells = pickle.load(f)
+        self.earnedSpells = SaveIO.load("shadowsden", "earnedSpells")
 
     def get_spell_by_index(self, i):
         return self.secret_spells.spellList[i]
