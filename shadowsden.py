@@ -20,6 +20,7 @@ class Data:
     spell_manager = SpellManager()
     link_explanations = []
     msg_id_no_reply_found = -1
+    game_banned = {}
 
 
 def scheduled_empty_queue(bot):
@@ -347,6 +348,38 @@ def command_emptyqueue(self, args, msg, event):
             print s
 
 
+def command_gameban(cmd, bot, args, msg, event):
+    if len(args) != 1:
+        return "1 argument expected."
+    if not args[0].isdigit():
+        return "Invalid arguments."
+    uid = int(args[0])
+    try:
+        user_name = bot.client.get_user(uid).name.replace(" ", "")
+    except:
+        return "Could not fetch user; please check whether the user exists."
+    Data.game_banned[bot.site].append(uid)
+    SaveIO.save(Data.game_banned, save_subdir, "gameBannedUsers")
+    return "User @%s has been banned from playing the game." % user_name
+
+
+def command_gameunban(cmd, bot, args, msg, event):
+    if len(args) != 1:
+        return "1 argument expected."
+    if not args[0].isdigit():
+        return "Invalid arguments."
+    uid = int(args[0])
+    if uid not in Data.game_banned[bot.site]:
+        return "User not banned."
+    try:
+        user_name = bot.client.get_user(uid).name.replace(" ", "")
+    except:
+        return "Could not fetch user; please check whether the user exists."
+    Data.game_banned[bot.site].remove(uid)
+    SaveIO.save(Data.game_banned, save_subdir, "gameBannedUsers")
+    return "User @%s has been unbanned from playing the game." % user_name
+
+
 def on_bot_load(bot):
     waiting_time = SaveIO.load(save_subdir, "waitingtime")
     if len(waiting_time) == 0:
@@ -356,12 +389,18 @@ def on_bot_load(bot):
     Data.waiting_time = waiting_time
     Data.links = SaveIO.load(save_subdir, "linkedWords")
     Data.link_explanations = SaveIO.load(save_subdir, "linkExplanations")
+    Data.game_banned = SaveIO.load(save_subdir, "gameBannedUsers")
+    if Data.game_banned == {}:
+        Data.game_banned = {"stackexchange.com": [],
+                            "meta.stackexchange.com": [],
+                            "stackoverflow.com": []}
     Data.spell_manager.c = bot.client
     thread.start_new_thread(scheduled_empty_queue, (bot,))
 
 
 def on_event(event, client, bot):
-    if not isinstance(event, MessagePosted) or not bot.enabled:
+    if not isinstance(event, MessagePosted) or not bot.enabled or \
+            event.user.id in Data.game_banned[bot.site]:
         return
     message = event.message
     h = HTMLParser()
@@ -402,7 +441,9 @@ commands = [
     Command('continue', command_continue, "", False, False),
     Command('award', command_award, "", False, True),
     Command('emptyqueue', command_award, "", False, True),
-    Command('removespell', command_removespell, "", False, True)
+    Command('removespell', command_removespell, "", False, True),
+    Command('gameban', command_gameban, "", False, True),
+    Command('gameunban', command_gameunban, "", False, True)
 ]
 module_name = "shadowsden"
 save_subdir = "shadowsden"
