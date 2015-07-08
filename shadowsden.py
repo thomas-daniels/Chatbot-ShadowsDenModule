@@ -355,6 +355,7 @@ def on_bot_load(bot):
         waiting_time = waiting_time[0]
     Data.waiting_time = waiting_time
     Data.links = SaveIO.load(save_subdir, "linkedWords")
+    Data.link_explanations = SaveIO.load(save_subdir, "linkExplanations")
     Data.spell_manager.c = bot.client
     thread.start_new_thread(scheduled_empty_queue, (bot,))
 
