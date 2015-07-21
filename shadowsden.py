@@ -4,7 +4,7 @@ from ChatExchange3.chatexchange3.events import MessagePosted
 from .SpellManager import SpellManager
 import time
 import random
-from GetAssociatedWord import get_associated_word
+from .GetAssociatedWord import get_associated_word
 from threading import Thread
 from Module import Command
 from html.parser import HTMLParser
