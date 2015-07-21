@@ -12,7 +12,7 @@ class SpellManager:
         self.secret_spells = SecretSpells()
         self.bot_user_id = -1
         self.secret_spells.init()
-        if os.path.isfile("earnedSpells.txt"):
+        if os.path.isfile("botdata/shadowsden/earnedSpells.p"):
             self.load()
 
     def award(self, spell_id, user_id, queue):
@@ -78,7 +78,7 @@ class SpellManager:
     def empty_queue(self):
         ret = []
         to_be_popped = []
-        for user in self.spellQueue.iterkeys():
+        for user in self.spellQueue.keys():
             for key, value in self.spellQueue[user].iteritems():
                 if value is True:
                     ret.append(self.award(key, user, False))
