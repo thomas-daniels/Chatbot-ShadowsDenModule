@@ -1,5 +1,5 @@
 import os.path
-from SecretSpells import SecretSpells
+from .SecretSpells import SecretSpells
 import SaveIO
 
 

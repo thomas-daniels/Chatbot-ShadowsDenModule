@@ -1,7 +1,7 @@
 import re
 from ChatExchange3.chatexchange3.messages import Message
 from ChatExchange3.chatexchange3.events import MessagePosted
-from SpellManager import SpellManager
+from .SpellManager import SpellManager
 import time
 import random
 from GetAssociatedWord import get_associated_word
