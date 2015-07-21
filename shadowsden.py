@@ -9,6 +9,7 @@ from threading import Thread
 from Module import Command
 from html.parser import HTMLParser
 import SaveIO
+import os.path
 
 
 class Data:
@@ -388,6 +389,7 @@ def on_bot_load(bot):
     Data.links = SaveIO.load(save_subdir, "linkedWords")
     Data.link_explanations = SaveIO.load(save_subdir, "linkExplanations")
     Data.game_banned = SaveIO.load(save_subdir, "gameBannedUsers")
+    Data.spell_manager.load()
     if Data.game_banned == {}:
         Data.game_banned = {"stackexchange.com": [],
                             "meta.stackexchange.com": [],

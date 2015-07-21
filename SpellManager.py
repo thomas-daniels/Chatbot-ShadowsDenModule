@@ -1,4 +1,3 @@
-import os.path
 from .SecretSpells import SecretSpells
 import SaveIO
 
@@ -12,8 +11,6 @@ class SpellManager:
         self.secret_spells = SecretSpells()
         self.bot_user_id = -1
         self.secret_spells.init()
-        if os.path.isfile("botdata/shadowsden/earnedSpells.p"):
-            self.load()
 
     def award(self, spell_id, user_id, queue):
         if user_id == self.bot_user_id:
