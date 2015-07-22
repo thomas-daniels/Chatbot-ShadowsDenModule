@@ -1,6 +1,6 @@
-import os.path
-from SecretSpells import SecretSpells
+from .SecretSpells import SecretSpells
 import SaveIO
+from requests import HTTPError
 
 
 class SpellManager:
@@ -12,8 +12,6 @@ class SpellManager:
         self.secret_spells = SecretSpells()
         self.bot_user_id = -1
         self.secret_spells.init()
-        if os.path.isfile("earnedSpells.txt"):
-            self.load()
 
     def award(self, spell_id, user_id, queue):
         if user_id == self.bot_user_id:
@@ -54,8 +52,11 @@ class SpellManager:
         return self.secret_spells.spellList[i]
 
     def view_spells(self, user_id):
-        u = self.c.get_user(user_id)
-        n = u.name
+        try:
+            u = self.c.get_user(user_id)
+            n = u.name
+        except HTTPError:
+            return "Could not find that user."
         if user_id not in self.earnedSpells:
             return "%s has not earned any spells yet." % n
         else:
@@ -78,7 +79,7 @@ class SpellManager:
     def empty_queue(self):
         ret = []
         to_be_popped = []
-        for user in self.spellQueue.iterkeys():
+        for user in self.spellQueue.keys():
             for key, value in self.spellQueue[user].iteritems():
                 if value is True:
                     ret.append(self.award(key, user, False))

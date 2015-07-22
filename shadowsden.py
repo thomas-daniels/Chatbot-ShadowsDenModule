@@ -1,14 +1,15 @@
 import re
-from ChatExchange.chatexchange.messages import Message
-from ChatExchange.chatexchange.events import MessagePosted
-from SpellManager import SpellManager
+from ChatExchange3.chatexchange3.messages import Message
+from ChatExchange3.chatexchange3.events import MessagePosted
+from .SpellManager import SpellManager
 import time
 import random
-from GetAssociatedWord import get_associated_word
-import thread
+from .GetAssociatedWord import get_associated_word
+from threading import Thread
 from Module import Command
-from HTMLParser import HTMLParser
+from html.parser import HTMLParser
 import SaveIO
+import os.path
 
 
 class Data:
@@ -32,7 +33,7 @@ def scheduled_empty_queue(bot):
                     and s is not False:
                 bot.room.send_message(s)
             else:
-                print s
+                print(s)
 
 
 def reply_word(bot, message, wait, orig_word):
@@ -343,7 +344,7 @@ def command_emptyqueue(self, args, msg, event):
         if self.room is not None:
             self.room.send_message(s)
         else:
-            print s
+            print(s)
 
 
 def command_gameban(cmd, bot, args, msg, event):
@@ -388,12 +389,14 @@ def on_bot_load(bot):
     Data.links = SaveIO.load(save_subdir, "linkedWords")
     Data.link_explanations = SaveIO.load(save_subdir, "linkExplanations")
     Data.game_banned = SaveIO.load(save_subdir, "gameBannedUsers")
+    Data.spell_manager.load()
     if Data.game_banned == {}:
         Data.game_banned = {"stackexchange.com": [],
                             "meta.stackexchange.com": [],
                             "stackoverflow.com": []}
     Data.spell_manager.c = bot.client
-    thread.start_new_thread(scheduled_empty_queue, (bot,))
+    t = Thread(target=scheduled_empty_queue, args=(bot,))
+    t.start()
 
 
 def on_event(event, client, bot):
@@ -417,7 +420,8 @@ def on_event(event, client, bot):
     parts = content.split(" ")
     c = parts[1]
     Data.latest_word_id = message.id
-    thread.start_new_thread(reply_word, (bot, message, True, c))
+    t = Thread(target=reply_word, args=(bot, message, True, c))
+    t.start()
 
 commands = [
     Command('time', command_time, "", False, False),
