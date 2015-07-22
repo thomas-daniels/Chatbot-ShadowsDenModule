@@ -54,9 +54,9 @@ class SpellManager:
     def view_spells(self, user_id):
         try:
             u = self.c.get_user(user_id)
+            n = u.name
         except HTTPError:
             return "Could not find that user."
-        n = u.name
         if user_id not in self.earnedSpells:
             return "%s has not earned any spells yet." % n
         else:
