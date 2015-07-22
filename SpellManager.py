@@ -1,5 +1,6 @@
 from .SecretSpells import SecretSpells
 import SaveIO
+from requests import HTTPError
 
 
 class SpellManager:
@@ -51,7 +52,10 @@ class SpellManager:
         return self.secret_spells.spellList[i]
 
     def view_spells(self, user_id):
-        u = self.c.get_user(user_id)
+        try:
+            u = self.c.get_user(user_id)
+        except HTTPError:
+            return "Could not find that user."
         n = u.name
         if user_id not in self.earnedSpells:
             return "%s has not earned any spells yet." % n
