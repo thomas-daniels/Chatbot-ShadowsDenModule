@@ -151,7 +151,7 @@ def command_rmword(cmd, bot, args, msg, event):
         return "1 argument expected, %i given" % (len(args),)
     word = args[0]
     if word in Data.latest_words:
-        Data.latest_words = filter(lambda l: l != word, Data.latest_words)
+        Data.latest_words = list(filter(lambda l: l != word, Data.latest_words))
         return "Word removed from latest words."
     else:
         return "Word not in the list of latest words."
