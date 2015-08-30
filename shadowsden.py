@@ -262,6 +262,8 @@ def command_reply(cmd, bot, args, msg, event):
         return msg_does_not_qualify
     if re.compile("[^a-zA-Z0-9-]").search(parts[1]):
         return "Word contains invalid characters."
+    if parts[1] in Data.latest_words:
+        Data.latest_words.remove(parts[1])
     reply_word(bot, msg_to_reply_to, False, parts[1])
     return None
 
