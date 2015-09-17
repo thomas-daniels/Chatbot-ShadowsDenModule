@@ -405,6 +405,7 @@ def on_event(event, client, bot):
     if not isinstance(event, MessagePosted) or not bot.enabled or \
             event.user.id in Data.game_banned[bot.site]:
         return
+    Data.spell_manager.check_spells(event)
     message = event.message
     h = HTMLParser()
     content = h.unescape(message.content_source)
