@@ -432,7 +432,7 @@ commands = [
     Command('link', command_link, "Links two words so the bot knows they are associated.", False, False),
     Command('islink', command_islink, "Checks whether two words are linked using `link`.", False, False),
     Command('removelink', command_removelink, "Removes a link that's created by `link`.", False, False),
-    Command('addlinkexplanation', command_addlinkexplanation, "Add explanation for an association created using `link`.", False, False, False),
+    Command('addlinkexplanation', command_addlinkexplanation, "Add explanation for an association created using `link`.", False, False, None, None, None, None),
     Command('explainlink', command_explainlink, "Shows explanation for a link.", False, False),
     Command('removelinkexplanation', command_removelinkexplanation, "Removes explanation for a link created using `link`.", False, False),
     Command('viewspells', command_viewspells, "Shows the spells for a specific user. Spells are a feature of the game, and they have no other purpose than collecting them. Syntax: `$PREFIXviewspells <user id>`.", False, False),
