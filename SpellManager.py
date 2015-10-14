@@ -80,7 +80,8 @@ class SpellManager:
         ret = []
         to_be_popped = []
         for user in self.spellQueue.keys():
-            for key, value in self.spellQueue[user].iteritems():
+            for key in self.spellQueue[user].keys():
+                value = self.spellQueue[user][key]
                 if value is True:
                     ret.append(self.award(key, user, False))
                     to_be_popped.append((user, key))
