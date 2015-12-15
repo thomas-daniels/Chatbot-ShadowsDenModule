@@ -436,7 +436,7 @@ commands = [
     Command('explainlink', command_explainlink, "Shows explanation for a link.", False, False),
     Command('removelinkexplanation', command_removelinkexplanation, "Removes explanation for a link created using `link`.", False, False),
     Command('viewspells', command_viewspells, "Shows the spells for a specific user. Spells are a feature of the game, and they have no other purpose than collecting them. Syntax: `$PREFIXviewspells <user id>`.", False, False),
-    Command('showlatest10', command_showlatest10, "Shows the latest 10 game words.", False, False),
+    Command('showlatest10', command_showlatest10, "Shows the latest 10 game words.", False, False, None, ["showlast10"]),
     Command('latestword', command_latestword, "Shows the latest game word.", False, False),
     Command('lastword', command_latestword, "Shows the latest game word.", False, False),
     Command('setlatestword', command_setlatestword, "Sets the latest game word. Syntax: `$PREFIXsetlatestword <message id>`", False, False),
