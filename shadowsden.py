@@ -361,8 +361,11 @@ def command_gameban(cmd, bot, args, msg, event):
         user_name = bot.client.get_user(uid).name.replace(" ", "")
     except:
         return "Could not fetch user; please check whether the user exists."
-    Data.game_banned[bot.site].append(uid)
-    SaveIO.save(Data.game_banned, save_subdir, "gameBannedUsers")
+    if uid not in Data.game_banned[bot.site]:
+        Data.game_banned[bot.site].append(uid)
+        SaveIO.save(Data.game_banned, save_subdir, "gameBannedUsers")
+    else:
+        return "User %s has already been banned from playing the game."
     return "User @%s has been banned from playing the game." % user_name
 
 
@@ -378,8 +381,12 @@ def command_gameunban(cmd, bot, args, msg, event):
         user_name = bot.client.get_user(uid).name.replace(" ", "")
     except:
         return "Could not fetch user; please check whether the user exists."
-    Data.game_banned[bot.site].remove(uid)
-    SaveIO.save(Data.game_banned, save_subdir, "gameBannedUsers")
+    Data.game_banned[bot.site] = list(set(Data.game_banned[bot.site]))
+    if uid in Data.game_banned[bot.site]:
+        Data.game_banned[bot.site].remove(uid)
+        SaveIO.save(Data.game_banned, save_subdir, "gameBannedUsers")
+    else:
+        return "User %s has not been banned from playing the game."
     return "User @%s has been unbanned from playing the game." % user_name
 
 
