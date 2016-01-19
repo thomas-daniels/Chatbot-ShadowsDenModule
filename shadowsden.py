@@ -142,6 +142,8 @@ def command_setlatestword(cmd, bot, args, msg, event):
 
 def command_showlatest10(cmd, bot, args, msg, event):
     l = len(Data.latest_words)
+    if l == 0:
+        return "No latest words in memory."
     return "Latest %s %s: %s" % (l, "words" if l != 1 else "word",
                                     ", ".join(Data.latest_words))
 
