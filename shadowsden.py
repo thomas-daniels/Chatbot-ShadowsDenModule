@@ -9,13 +9,11 @@ from threading import Thread
 from Module import Command
 from html.parser import HTMLParser
 import SaveIO
-import os.path
 
 
 class Data:
     links = []
     waiting_time = -1
-    latest_word_id = -1
     current_word_to_reply_to = ""
     latest_words = []
     spell_manager = SpellManager()
@@ -119,25 +117,6 @@ def command_viewspells(cmd, bot, args, msg, event):
         return "Invalid arguments."
     spells = Data.spell_manager.view_spells(user_id)
     return spells
-
-
-def command_latestword(cmd, bot, args, msg, event):
-    lwi = Data.latest_word_id
-    if lwi != -1:
-        return "http://chat.meta.stackexchange.com/transcript/message/%s#%s" % (lwi, lwi)
-    else:
-        return "I don't know."
-
-
-def command_setlatestword(cmd, bot, args, msg, event):
-    if len(args) != 1:
-        return "1 argument expected, %i given" % (len(args),)
-    try:
-        new_lwi = int(args[0])
-        Data.latest_word_id = new_lwi
-        return "Latest word set."
-    except ValueError:
-        return "Given argument is not an integer."
 
 
 def command_showlatest10(cmd, bot, args, msg, event):
@@ -427,11 +406,9 @@ def on_event(event, client, bot):
         return
     if event.user.id == bot.client.get_me().id:
         Data.current_word_to_reply_to = content.split(" ")[1]
-        Data.latest_word_id = message.id
         return
     parts = content.split(" ")
     c = parts[1]
-    Data.latest_word_id = message.id
     t = Thread(target=reply_word, args=(bot, message, True, c))
     t.start()
 
@@ -446,9 +423,6 @@ commands = [
     Command('removelinkexplanation', command_removelinkexplanation, "Removes explanation for a link created using `link`.", False, False),
     Command('viewspells', command_viewspells, "Shows the spells for a specific user. Spells are a feature of the game, and they have no other purpose than collecting them. Syntax: `$PREFIXviewspells <user id>`.", False, False),
     Command('showlatest10', command_showlatest10, "Shows the latest 10 game words.", False, False, None, ["showlast10"]),
-    Command('latestword', command_latestword, "Shows the latest game word.", False, False),
-    Command('lastword', command_latestword, "Shows the latest game word.", False, False),
-    Command('setlatestword', command_setlatestword, "Sets the latest game word. Syntax: `$PREFIXsetlatestword <message id>`", False, False),
     Command('rmword', command_rmword, "Removes a word from the latest 10 words.", False, False),
     Command('reply', command_reply, "Replies to a specific word. Syntax: `$PREFIXreply message_id` or `$PREFIXreply recent` for replying to the most recent word, if finding an association failed (can be used after editing or adding a link).", False, False),
     Command('retry', command_retry, "Shortcut for `$PREFIXreply recent`", False, False),
