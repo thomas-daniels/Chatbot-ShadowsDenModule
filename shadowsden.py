@@ -7,7 +7,7 @@ import random
 from .GetAssociatedWord import get_associated_word
 from threading import Thread
 from Module import Command
-from html.parser import HTMLParser
+import html
 import SaveIO
 
 
@@ -395,8 +395,7 @@ def on_event(event, client, bot):
         return
     Data.spell_manager.check_spells(event)
     message = event.message
-    h = HTMLParser()
-    content = h.unescape(message.content_source)
+    content = html.unescape(message.content_source)
     content = re.sub(r"([:;][-']?[)/(DPdpoO\[\]\\|])", "", content)  # strip smilies
     content = re.sub(r"\[(.+?)\]\(.+?\)", r"\1", content)
     content = re.sub(r"\(.+?\)", "", content)
