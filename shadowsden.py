@@ -63,19 +63,28 @@ def reply_word(bot, message, wait, orig_word):
 def find_associated_word(word):
         latest_words_no_save = Data.latest_words[:]
         latest_words_no_save.append(word.lower())
+        found_links = find_links(word)
+        word_to_reply = None
+        word_found = False
+        valid_found_links = []
+        if len(found_links) > 0:
+            for link in found_links:
+                if link not in latest_words_no_save:
+                    valid_found_links.append(link)
+            choices = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] + valid_found_links
+            choice = random.choice(choices)
+            if choice != 0:
+                word_to_reply = choice
+                word_found = True
         # Create a temp list. Adding the word to the list of the class
         # should only happen if an associated word is found.
-        get_word = get_associated_word(word, latest_words_no_save)
-        word_to_reply = get_word[0]
-        word_found = get_word[1]
         if word_to_reply is None:
-            found_links = find_links(word)
-            valid_found_links = []
+            get_word = get_associated_word(word, latest_words_no_save)
+            word_to_reply = get_word[0]
+            word_found = get_word[1]
+        if word_to_reply is None:
             if len(found_links) > 0:
                 word_found = True
-            for link in found_links:
-                if link not in Data.latest_words:
-                    valid_found_links.append(link)
             if len(valid_found_links) > 0:
                 word_to_reply = random.choice(valid_found_links)
         if word_to_reply is not None:
