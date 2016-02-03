@@ -1,6 +1,6 @@
 import re
-from ChatExchange3.chatexchange3.messages import Message
-from ChatExchange3.chatexchange3.events import MessagePosted
+from ChatExchange6.chatexchange6.messages import Message
+from ChatExchange6.chatexchange6.events import MessagePosted
 from .SpellManager import SpellManager
 import time
 import random
