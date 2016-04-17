@@ -400,7 +400,7 @@ def on_bot_load(bot):
 
 def on_event(event, client, bot):
     if not isinstance(event, MessagePosted) or not bot.enabled or \
-            event.user.id in Data.game_banned[bot.site]:
+            event.user.id in Data.game_banned[bot.site] or bot.suspended_until > time.time():
         return
     Data.spell_manager.check_spells(event)
     message = event.message
