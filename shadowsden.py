@@ -390,9 +390,9 @@ def on_bot_load(bot):
         Data.links = []
         SaveIO.save(Data.links, save_subdir, "linkedWords")
     Data.link_explanations = SaveIO.load(save_subdir, "linkExplanations")
-    if Data.linkExplanations == {}:
-        Data.linkExplanations = []
-        SaveIO.save(Data.linkExplanations, save_subdir, "linkExplanations")
+    if Data.link_explanations == {}:
+        Data.link_explanations = []
+        SaveIO.save(Data.link_explanations, save_subdir, "linkExplanations")
     Data.game_banned = SaveIO.load(save_subdir, "gameBannedUsers")
     Data.spell_manager.load()
     if Data.game_banned == {}:
