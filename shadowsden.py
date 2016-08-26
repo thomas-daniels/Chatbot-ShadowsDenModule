@@ -20,6 +20,7 @@ class Data:
     link_explanations = []
     msg_id_no_reply_found = -1
     game_banned = {}
+    joined_game = {}
 
 
 def scheduled_empty_queue(bot):
@@ -378,6 +379,24 @@ def command_gameunban(cmd, bot, args, msg, event):
     return "User @%s has been unbanned from playing the game." % user_name
 
 
+def command_joingame(cmd, bot, args, msg, event):
+    if event.user.id in Data.game_banned[bot.site]:
+        return "You're game banned and can't join."
+    if event.user.id in Data.joined_game[bot.site]:
+        return "You're already in the game."
+    Data.joined_game[bot.site].append(event.user.id)
+    SaveIO.save(Data.joined_game, save_subdir, "usersInGame")
+    return "You joined the Word Association Game! Run `>>quitgame` to leave."
+
+
+def command_quitgame(cmd, bot, args, msg, event):
+    if event.user.id not in Data.joined_game[bot.site]:
+        return "You didn't join the game."
+    Data.joined_game[bot.site].remove(event.user.id)
+    SaveIO.save(Data.joined_game, save_subdir, "usersInGame")
+    return "You left the Word Association Game. Run `>>joingame` to join again."
+
+
 def on_bot_load(bot):
     waiting_time = SaveIO.load(save_subdir, "waitingtime")
     if len(waiting_time) == 0:
@@ -399,6 +418,11 @@ def on_bot_load(bot):
         Data.game_banned = {"stackexchange.com": [],
                             "meta.stackexchange.com": [],
                             "stackoverflow.com": []}
+    Data.joined_game = SaveIO.load(save_subdir, "usersInGame")
+    if Data.joined_game == {} or Data.joined_game is None:
+        Data.joined_game = {"stackexchange.com": [],
+                            "meta.stackexchange.com": [],
+                            "stackoverflow.com": []}
     Data.spell_manager.c = bot.client
     t = Thread(target=scheduled_empty_queue, args=(bot,))
     t.start()
@@ -406,7 +430,8 @@ def on_bot_load(bot):
 
 def on_event(event, client, bot):
     if not isinstance(event, MessagePosted) or not bot.enabled or \
-            event.user.id in Data.game_banned[bot.site] or bot.suspended_until > time.time():
+            event.user.id in Data.game_banned[bot.site] or bot.suspended_until > time.time() \
+            or event.user.id not in Data.joined_game[bot.site]:
         return
     Data.spell_manager.check_spells(event)
     message = event.message
@@ -445,7 +470,9 @@ commands = [
     Command('emptyqueue', command_award, "Owner-only. Empties the spell queue.", False, True),
     Command('removespell', command_removespell, "Owner-only. Removes a spell from a specific user.", False, True),
     Command('gameban', command_gameban, "Owner-only. Bans a user from playing the game.", False, True),
-    Command('gameunban', command_gameunban, "Owner-only. Undoes `$PREFIXgameban`", False, True)
+    Command('gameunban', command_gameunban, "Owner-only. Undoes `$PREFIXgameban`", False, True),
+    Command('joingame', command_joingame, "Joins the Word Association Game.", False, False),
+    Command('quitgame', command_quitgame, "Quits the Word Association Game.", False, False)
 ]
 module_name = "shadowsden"
 save_subdir = "shadowsden"
