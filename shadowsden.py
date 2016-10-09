@@ -9,6 +9,7 @@ from threading import Thread
 from Module import Command
 import html
 import SaveIO
+from requests.exceptions import HTTPError
 
 
 class Data:
@@ -238,7 +239,10 @@ def command_reply(cmd, bot, args, msg, event):
             return "Invalid arguments."
         if msg_id_to_reply_to == -1:
             return "'recent' has a value of -1, which is not a valid message ID. Please provide an explicit ID."
-    msg_to_reply_to = Message(msg_id_to_reply_to, bot.client)
+    try:
+        msg_to_reply_to = Message(msg_id_to_reply_to, bot.client)
+    except HTTPError:
+        return "Message not found."
     if msg_to_reply_to.room.id != bot.room.id:
         return "That message was posted in another room."
     content = msg_to_reply_to.content_source
