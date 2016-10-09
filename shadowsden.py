@@ -240,7 +240,7 @@ def command_reply(cmd, bot, args, msg, event):
             return "'recent' has a value of -1, which is not a valid message ID. Please provide an explicit ID."
     msg_to_reply_to = Message(msg_id_to_reply_to, bot.client)
     if msg_to_reply_to.room.id != bot.room.id:
-        return None
+        return "That message was posted in another room."
     content = msg_to_reply_to.content_source
     content = re.sub(r"([:;][-']?[)/(DPdpoO\[\]\\|])", "", content)  # strip smilies
     content = re.sub(r"\[(.+?)\]\(.+?\)", r"\1", content)
