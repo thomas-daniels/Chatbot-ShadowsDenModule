@@ -1,6 +1,6 @@
 import re
-from ChatExchange6.chatexchange6.messages import Message
-from ChatExchange6.chatexchange6.events import MessagePosted
+from ChatExchange.chatexchange.messages import Message
+from ChatExchange.chatexchange.events import MessagePosted
 import time
 import random
 from .GetAssociatedWord import get_associated_word
