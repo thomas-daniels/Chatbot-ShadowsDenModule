@@ -1,7 +1,6 @@
 import re
 from ChatExchange6.chatexchange6.messages import Message
 from ChatExchange6.chatexchange6.events import MessagePosted
-from .SpellManager import SpellManager
 import time
 import random
 from .GetAssociatedWord import get_associated_word
@@ -17,23 +16,10 @@ class Data:
     waiting_time = -1
     current_word_to_reply_to = ""
     latest_words = []
-    spell_manager = SpellManager()
     link_explanations = []
     msg_id_no_reply_found = -1
     game_banned = {}
     joined_game = {}
-
-
-def scheduled_empty_queue(bot):
-    while bot.running:
-        time.sleep(15 * 60)
-        awarded = Data.spell_manager.empty_queue()
-        for s in awarded:
-            if bot.room is not None and s != "This spell was already awarded."\
-                    and s is not False:
-                bot.room.send_message(s)
-            else:
-                print(s)
 
 
 def reply_word(bot, message, wait, orig_word):
@@ -117,18 +103,6 @@ def command_time(cmd, bot, args, msg, event):
             return "Given argument is not a valid integer."
     else:
         return "Command does not have enough arguments."
-
-
-def command_viewspells(cmd, bot, args, msg, event):
-    if len(args) < 1:
-        return "Not enough arguments."
-    try:
-        user_id = int(args[0])
-    except ValueError:
-        return "Invalid arguments."
-    spells = Data.spell_manager.view_spells(user_id)
-    return spells
-
 
 def command_showlatest10(cmd, bot, args, msg, event):
     l = len(Data.latest_words)
@@ -315,37 +289,6 @@ def remove_link(item0, item1):
     return "No link found."
 
 
-def command_award(cmd, bot, args, msg, event):
-    if len(args) < 3:
-        return "Not enough arguments."
-    try:
-        spell_id = int(args[0])
-        user_id = int(args[1])
-    except ValueError:
-        return "Not a valid id."
-    if args[2] == "-n":
-        add_to_queue = False
-    elif args[2] == "-q":
-        add_to_queue = True
-    else:
-        return "Invalid arguments."
-    return Data.spell_manager.award(spell_id, user_id, add_to_queue)
-
-
-def command_removespell(cmd, bot, args, msg, event):
-    Data.spell_manager.remove(int(args[1]), int(args[0]))
-    return "Spell removed (un-awarded)."
-
-
-def command_emptyqueue(self, args, msg, event):
-    awarded = self.spell_manager.empty_queue()
-    for s in awarded:
-        if self.room is not None:
-            self.room.send_message(s)
-        else:
-            print(s)
-
-
 def command_gameban(cmd, bot, args, msg, event):
     if len(args) != 1:
         return "1 argument expected."
@@ -419,7 +362,6 @@ def on_bot_load(bot):
         Data.link_explanations = []
         SaveIO.save(Data.link_explanations, save_subdir, "linkExplanations")
     Data.game_banned = SaveIO.load(save_subdir, "gameBannedUsers")
-    Data.spell_manager.load()
     if Data.game_banned == {}:
         Data.game_banned = {"stackexchange.com": [],
                             "meta.stackexchange.com": [],
@@ -429,9 +371,6 @@ def on_bot_load(bot):
         Data.joined_game = {"stackexchange.com": [],
                             "meta.stackexchange.com": [],
                             "stackoverflow.com": []}
-    Data.spell_manager.c = bot.client
-    t = Thread(target=scheduled_empty_queue, args=(bot,))
-    t.start()
 
 
 def on_event(event, client, bot):
@@ -439,7 +378,6 @@ def on_event(event, client, bot):
             event.user.id in Data.game_banned[bot.site] or bot.suspended_until > time.time() \
             or event.user.id not in Data.joined_game[bot.site]:
         return
-    Data.spell_manager.check_spells(event)
     message = event.message
     content = html.unescape(message.content_source)
     content = re.sub(r"([:;][-']?[)/(DPdpoO\[\]\\|])", "", content)  # strip smilies
@@ -466,15 +404,11 @@ commands = [
     Command('addlinkexplanation', command_addlinkexplanation, "Add explanation for an association created using `link`.", False, False, None, None, None, None),
     Command('explainlink', command_explainlink, "Shows explanation for a link.", False, False),
     Command('removelinkexplanation', command_removelinkexplanation, "Removes explanation for a link created using `link`.", False, False),
-    Command('viewspells', command_viewspells, "Shows the spells for a specific user. Spells are a feature of the game, and they have no other purpose than collecting them. Syntax: `$PREFIXviewspells <user id>`.", False, False),
     Command('showlatest10', command_showlatest10, "Shows the latest 10 game words.", False, False, None, ["showlast10"]),
     Command('rmword', command_rmword, "Removes a word from the latest 10 words.", False, False),
     Command('reply', command_reply, "Replies to a specific word. Syntax: `$PREFIXreply message_id` or `$PREFIXreply recent` for replying to the most recent word, if finding an association failed (can be used after editing or adding a link).", False, False),
     Command('retry', command_retry, "Shortcut for `$PREFIXreply recent`", False, False),
     Command('continue', command_continue, "Shortcut for `$PREFIXlink word1 word2` + `$PREFIXretry`", False, False),
-    Command('award', command_award, "Owner-only. Awards a spell to a specific user.", False, True),
-    Command('emptyqueue', command_award, "Owner-only. Empties the spell queue.", False, True),
-    Command('removespell', command_removespell, "Owner-only. Removes a spell from a specific user.", False, True),
     Command('gameban', command_gameban, "Owner-only. Bans a user from playing the game.", False, True),
     Command('gameunban', command_gameunban, "Owner-only. Undoes `$PREFIXgameban`", False, True),
     Command('joingame', command_joingame, "Joins the Word Association Game.", False, False),
