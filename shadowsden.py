@@ -45,7 +45,7 @@ def reply_word(bot, message, wait, orig_word):
         Data.msg_id_no_reply_found = -1
     else:
         Data.msg_id_no_reply_found = -1
-        message.reply(word)
+        message.reply(word + " [(?)](http://chat.meta.stackexchange.com/transcript/message/6043626#6043626)")
 
 
 def find_associated_word(word):
@@ -335,7 +335,7 @@ def command_joingame(cmd, bot, args, msg, event):
         return "You're already in the game."
     Data.joined_game[bot.site].append(event.user.id)
     SaveIO.save(Data.joined_game, save_subdir, "usersInGame")
-    return "You joined the Word Association Game! Run `>>quitgame` to leave."
+    return "You joined the Word Association Game! Take a look at the [tutorial](http://chat.meta.stackexchange.com/transcript/message/6043626#6043626). Run `>>quitgame` to leave."
 
 
 def command_quitgame(cmd, bot, args, msg, event):
