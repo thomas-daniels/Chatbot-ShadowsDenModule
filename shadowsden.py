@@ -386,7 +386,7 @@ def on_bot_load(bot):
 def on_event(event, client, bot):
     if not isinstance(event, MessagePosted) or not bot.enabled or \
             event.user.id in Data.game_banned[bot.site] or bot.suspended_until > time.time() \
-            or event.user.id not in Data.joined_game[bot.site]:
+            or (event.user.id not in Data.joined_game[bot.site] and event.user.id != bot.client.get_me().id):
         return
     message = event.message
     content = html.unescape(message.content_source)
