@@ -14,6 +14,7 @@ from requests.exceptions import HTTPError
 class Data:
     links = []
     waiting_time = -1
+    latest_word_id = -1
     current_word_to_reply_to = ""
     latest_words = []
     link_explanations = []
@@ -103,6 +104,15 @@ def command_time(cmd, bot, args, msg, event):
             return "Given argument is not a valid integer."
     else:
         return "Command does not have enough arguments."
+
+
+def command_latestword(cmd, bot, args, msg, event):
+    lwi = Data.latest_word_id
+    if lwi != -1:
+        return "http://chat.meta.stackexchange.com/transcript/message/%s#%s" % (lwi, lwi)
+    else:
+        return "I don't know."
+
 
 def command_showlatest10(cmd, bot, args, msg, event):
     l = len(Data.latest_words)
@@ -389,9 +399,11 @@ def on_event(event, client, bot):
         return
     if event.user.id == bot.client.get_me().id:
         Data.current_word_to_reply_to = content.split(" ")[1]
+        Data.latest_word_id = message.id
         return
     parts = content.split(" ")
     c = parts[1]
+    Data.latest_word_id = message.id
     t = Thread(target=reply_word, args=(bot, message, True, c))
     t.start()
 
@@ -405,6 +417,7 @@ commands = [
     Command('explainlink', command_explainlink, "Shows explanation for a link.", False, False),
     Command('removelinkexplanation', command_removelinkexplanation, "Removes explanation for a link created using `link`.", False, False),
     Command('showlatest10', command_showlatest10, "Shows the latest 10 game words.", False, False, None, ["showlast10"]),
+    Command('latestword', command_latestword, "Shows the latest game word.", False, False, None, ["lastword"]),
     Command('rmword', command_rmword, "Removes a word from the latest 10 words.", False, False),
     Command('reply', command_reply, "Replies to a specific word. Syntax: `$PREFIXreply message_id` or `$PREFIXreply recent` for replying to the most recent word, if finding an association failed (can be used after editing or adding a link).", False, False),
     Command('retry', command_retry, "Shortcut for `$PREFIXreply recent`", False, False),
