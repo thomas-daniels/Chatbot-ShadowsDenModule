@@ -313,7 +313,7 @@ def command_gameban(cmd, bot, args, msg, event):
         Data.game_banned[bot.site].append(uid)
         SaveIO.save(Data.game_banned, save_subdir, "gameBannedUsers")
     else:
-        return "User %s has already been banned from playing the game."
+        return "User %s has already been banned from playing the game." % user_name
     return "User @%s has been banned from playing the game." % user_name
 
 
