@@ -24,7 +24,7 @@ class Data:
 
 
 def reply_word(bot, message, wait, orig_word):
-    if orig_word in Data.latest_words:
+    if orig_word.lower() in Data.latest_words:
         message.reply("That word is already said in the latest 10 words. "
                       "Please use another. (In case I'm mistaken, "
                       "run `>>rmword %s` and then `>>reply %s`)"
@@ -126,7 +126,7 @@ def command_rmword(cmd, bot, args, msg, event):
     if len(args) != 1:
         return "1 argument expected, %i given" % (len(args),)
     word = args[0]
-    if word in Data.latest_words:
+    if word.lower() in Data.latest_words:
         Data.latest_words = list(filter(lambda l: l != word, Data.latest_words))
         return "Word removed from latest words."
     else:
