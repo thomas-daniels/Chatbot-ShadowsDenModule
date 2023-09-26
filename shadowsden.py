@@ -155,6 +155,12 @@ def command_islink(cmd, bot, args, msg, event):
     else:
         return "No, that's not a link."
 
+def command_listlinks(cmd, bot, args, msg, event):
+    reply_text = ""
+    for association in Data.links:
+        reply_text += f"{association[0]} => {association[1]}\n"
+    return reply_text
+
 
 def removelinkexplanation(link):
     to_remove = []
@@ -412,6 +418,7 @@ commands = [
     Command('showtime', command_showtime, "Shows the current waiting time as set by the `time` command.", False, False),
     Command('link', command_link, "Links two words so the bot knows they are associated.", False, False),
     Command('islink', command_islink, "Checks whether two words are linked using `link`.", False, False),
+    Command('listlinks', command_listlinks, "Lists every associated words that was linked using `link`.", False, False, None, ["links"]),
     Command('removelink', command_removelink, "Removes a link that's created by `link`.", False, False),
     Command('addlinkexplanation', command_addlinkexplanation, "Add explanation for an association created using `link`.", False, False, None, None, None, None),
     Command('explainlink', command_explainlink, "Shows explanation for a link.", False, False),
