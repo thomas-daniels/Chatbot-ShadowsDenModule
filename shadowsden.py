@@ -21,6 +21,7 @@ class Data:
     msg_id_no_reply_found = -1
     game_banned = {}
     joined_game = {}
+    links_only = false
 
 
 def reply_word(bot, message, wait, orig_word):
@@ -60,14 +61,19 @@ def find_associated_word(word):
             for link in found_links:
                 if link not in latest_words_no_save:
                     valid_found_links.append(link)
-            choices = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] + valid_found_links
+                    
+            choices = [0]
+            if not Data.links_only:
+                choices = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] + valid_found_links
+            else:
+                choices = valid_found_links
             choice = random.choice(choices)
             if choice != 0:
                 word_to_reply = choice
                 word_found = True
         # Create a temp list. Adding the word to the list of the class
         # should only happen if an associated word is found.
-        if word_to_reply is None:
+        if word_to_reply is None and not Data.links_only:
             get_word = get_associated_word(word, latest_words_no_save)
             word_to_reply = get_word[0]
             word_found = get_word[1]
@@ -343,6 +349,13 @@ def command_gameunban(cmd, bot, args, msg, event):
         return "User %s has not been banned from playing the game."
     return "User @%s has been unbanned from playing the game." % user_name
 
+def command_manual(cmd, bot, args, msg, event):
+    if not Data.links_only:
+        Data.links_only = True
+        return "Switched to using only links."
+    else:
+        Data.links_only = False
+        return "Switched from using only links to links and server words."
 
 def command_joingame(cmd, bot, args, msg, event):
     if event.user.id in Data.game_banned[bot.site]:
@@ -432,6 +445,7 @@ commands = [
     Command('gameban', command_gameban, "Owner-only. Bans a user from playing the game.", False, True),
     Command('gameunban', command_gameunban, "Owner-only. Undoes `$PREFIXgameban`", False, True),
     Command('joingame', command_joingame, "Joins the Word Association Game.", False, False),
+    Command('manual', command_manual, "Switch between using link-only and normal mode.", False, False),
     Command('quitgame', command_quitgame, "Quits the Word Association Game.", False, False)
 ]
 module_name = "shadowsden"
