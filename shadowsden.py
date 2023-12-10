@@ -21,7 +21,7 @@ class Data:
     msg_id_no_reply_found = -1
     game_banned = {}
     joined_game = {}
-    links_only = false
+    links_only = False
 
 
 def reply_word(bot, message, wait, orig_word):
