@@ -190,8 +190,8 @@ def command_addlinkexplanation(cmd, bot, args, msg, event):
     removelinkexplanation((w1, w2))  # remove any older explanations
     if not links_contain((w1, w2)):
         return "That link does not exist."
-    if re.compile(r"[^a-zA-Z0-9_%*/:.#()\[\]?&=-]").search(args[2]):
-        return "Sorry, your explanation can only contain the chars `a-zA-Z_*%/:.#()[]-`."
+    if re.compile(r"[^a-zA-Z0-9_%*/:.#()\[\]?&=-,]").search(args[2]):
+        return "Sorry, your explanation can only contain the chars `a-zA-Z_*%/:.#()[]=-,`."
     Data.link_explanations.append(((w1, w2), args[2]))
     SaveIO.save(Data.link_explanations, save_subdir, "linkExplanations")
     return "Explanation added."
